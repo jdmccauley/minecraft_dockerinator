@@ -35,7 +35,7 @@ def get_world_names(world_dirs: list) -> list:
     return world_names
 
 
-def pick_world(world_names: list) -> str:
+def pick_world(world_names: list) -> int:
     for i in range(len(world_names)):
         print(f'{i + 1}: {world_names[i]}')
     selection = input("Enter which Minecraft world you want to serve: ")
@@ -44,7 +44,7 @@ def pick_world(world_names: list) -> str:
 
 def make_volume(
     world_dirs: list, 
-    picked_world: str
+    picked_world: int
 ) -> None:
     picked_path = world_dirs[picked_world]
     # make temporary directory with world information
