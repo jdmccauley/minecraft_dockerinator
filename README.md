@@ -15,7 +15,7 @@
 # Quickstart
 
 ```
-python3 dockerizer.py
+python3 voluminator.py
 ```
 
 # Purpose
@@ -49,7 +49,7 @@ C:\Users\username\AppData\Local\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\Lo
 # Steps:
 
 1. Clone this repo.
-2. Run the python script from the repo with `python3 dockerizer.py`.
+2. Run the python script from the repo with `python3 voluminator.py`.
     * The Bedrock server is started automatically.
 3. Open Minecraft, go to 'Play -> Friends -> LAN Games -> Dedicated Server'
 4. Play Minecraft with your friends (or alone, that's fun too)!
