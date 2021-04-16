@@ -14,17 +14,16 @@ utf8 = 'utf-8'
 # Functions
 def get_world_dirs() -> list:
     username = getpass.getuser()
-    user_path = f'''
-        C:\\Users\\{username}\\AppData\\Local\\Packages\\
-        Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\
-        games\\com.mojang\\minecraftWorlds
-    '''
+    user_path = (f'C:\\Users\\{username}\\AppData\\Local\\Packages\\'
+        'Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\'
+        'games\\com.mojang\\minecraftWorlds'
+    )
     world_dirs = []
     for dir in os.listdir(user_path):
         if os.path.isdir(os.path.join(user_path, dir)) == True:
             world_dirs.append(dir)
     for i in range(len(world_dirs)):
-        world_dirs[i] = f'{user_path}\{world_dirs[i]}'
+        world_dirs[i] = f'{user_path}/{world_dirs[i]}'
     return world_dirs
 
 def get_world_names(world_dirs: list) -> list:
@@ -41,42 +40,56 @@ def get_world_names(world_dirs: list) -> list:
 def pick_world(world_names: list) -> int:
     for i in range(len(world_names)):
         print(f'{i + 1}: {world_names[i]}')
-    selection = input("Enter which Minecraft world you want to serve: ")
+    try:
+        selection = input("Enter which Minecraft world you want to serve: ")
+    except:
+        print("Selecting option 1 by default.")
+        selection = 1
     selection = int(selection) - 1
     return selection
 
-def make_volume(world_dirs: list, picked_world: int) -> None:
+def make_volume(world_dirs: list, picked_world: int, volume_name: str) -> None:
     picked_path = world_dirs[picked_world]
-    # make temporary directory with world information
+    # Make temporary directory with world information
     tmpdir = os.path.join(os.getcwd(), 'data')
-    if 'data' in os.listdir():
-        shutil.rmtree(tmpdir)
-    shutil.copytree(picked_path, f'{tmpdir}/worlds/Bedrock level')
-    shutil.copyfile('server.properties', 'data/server.properties')
-    # delete if volume already exists
-    volume_name = 'dockerized_world'
+    try:
+        shutil.copytree(picked_path, f'{tmpdir}/worlds/Bedrock level')
+        shutil.copyfile('server.properties', 'data/server.properties')
+    except:
+        print("'data' is already a directory. Please remove to have this script function.")
     volumes = subprocess.check_output([
         'powershell.exe',
         'docker volume ls'],
         text = True
             ).replace(" ", "\t"
-            ).replace("\n", ""
+            ).replace("\n", "\t"
             ).split("\t"
     )
-    if volume_name in volumes:
+    try:
         subprocess.run([
             'powershell.exe',
-            f'docker volume rm {volume_name}'
+            f'docker volume create {volume_name}'
         ])
-    # make new volume
+    except:
+        if volume_name in volumes:
+            print("Your volume name is already used by an existing volume.")
+            decision = input("Do you want to delete your current volume of the same name? (Y/N): ")
+            if decision == 'Y':
+                try:
+                    subprocess.run([
+                        'powershell.exe',
+                        f'docker volume rm {volume_name}'
+                    ])
+                except:
+                    print("Volume not deleted.")            
+            elif decision == 'N':
+                print("Volume not deleted.")
+        else:
+            print("Something went wrong when making your volume.")
+    # Add volumes to volume
     subprocess.run([
         'powershell.exe',
-        f'docker volume create {volume_name}'
-    ])
-    # add volumes to volume
-    subprocess.run([
-        'powershell.exe',
-        'docker create -it -v dockerized_world:/data --name file_shipper ubuntu',
+        f'docker create -it -v {volume_name}:/data --name file_shipper ubuntu',
     ])
     subprocess.run([
         'powershell.exe',
@@ -90,6 +103,8 @@ def make_volume(world_dirs: list, picked_world: int) -> None:
         'powershell.exe',
         'docker rm file_shipper'
     ])
-    shutil.rmtree(tmpdir)
-
+    try:
+        shutil.rmtree(tmpdir)
+    except:
+        print("Something went wrong when trying to delete 'data' directory.")
 
