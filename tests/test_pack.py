@@ -5,8 +5,8 @@ import os
 import subprocess
 
 # Custom libraries
-import volume_utils
-import cloud_utils
+from .. utils import volume_utils
+from .. utils import cloud_utils
 
 # Tests
 

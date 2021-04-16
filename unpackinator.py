@@ -2,7 +2,12 @@
 # to a remote server.
 
 # Custom Libraries
-import cloud_utils
+from utils import cloud_utils
 
-# Main
-cloud_utils.unpack()
+
+def main():
+    cloud_utils.unpack()
+
+
+if __name__ == "__main__":
+    main()
