@@ -9,7 +9,10 @@ import getpass
 import os
 import subprocess
 
+# Custom libraries
 import volume_utils
+
+# Tests
 
 def test_get_world_dirs():
     world_dirs = volume_utils.get_world_dirs()
@@ -43,15 +46,16 @@ def test_make_volume():
             ).replace("\n", "\t"
             ).split("\t"
     )
-    default_volume_name = 'dockerized_world'
-    assert default_volume_name not in volumes, "Volume name already exists."
-    volume = volume_utils.make_volume(
+    volume_name = 'test_world'
+    assert volume_name not in volumes, "Volume name already exists."
+    volume_utils.make_volume(
         volume_utils.get_world_dirs(),
         volume_utils.pick_world(
             volume_utils.get_world_names(
                 volume_utils.get_world_dirs()
             )
-        )
+        ),
+        volume_name = volume_name
     )
     volumes = subprocess.check_output([
         "powershell.exe",
@@ -61,6 +65,6 @@ def test_make_volume():
             ).replace("\n", "\t"
             ).split("\t"
     )
-    assert volume in volumes, "Volume not created."
+    assert volume_name in volumes, "Volume not created."
     assert 'data' not in os.listdir(), "'data' directory not deleted."
 

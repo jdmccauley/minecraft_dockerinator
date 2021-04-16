@@ -5,29 +5,36 @@
 import subprocess
 
 # Functions
-def pack_volume() -> None:
+def pack_volume(volume_name: str, archive_name: str) -> None:
     subprocess.run([
-        "powershell.exe",
-        "docker create -v dockerized_world:/world_volume --name mailman ubuntu /bin/bash"
+        'powershell.exe',
+        f'docker create -v {volume_name}:/world_volume --name mailman ubuntu /bin/bash'
     ])
     subprocess.run([
-        "powershell.exe",
-        "docker run --rm --volumes-from mailman -v ${pwd}:/tar_dir ubuntu tar cvf tar_dir/dockerized_world.tar /world_volume"
+        'powershell.exe',
+        f'docker run --rm --volumes-from mailman -v ${pwd}:/tar_dir ubuntu tar cvf tar_dir/{archive_name}.tar /world_volume'
     ])
     subprocess.run([
-        "powershell.exe",
-        "docker rm mailman"
+        'powershell.exe',
+        'docker rm mailman'
     ])
 
 
-def unpack_volume() -> None:
+def unpack_volume(volume_name: str, archive_name: str) -> None:
     subprocess.run([
-        "powershell.exe",
-        "docker create -v restored_volume:/tar_mount --name mail2 ubuntu /bin/bash"
+        'powershell.exe',
+        f'docker create -v {volume_name}:/tar_mount --name mail2 ubuntu /bin/bash'
     ])
     subprocess.run([
-        "powershell.exe",
-        "docker run --rm --volumes-from mail2 -v ${pwd}:/unpacker ubuntu bash -c \"cd /tar_mount && tar xvf /unpacker/dockerized_world.tar --strip 1\""
+        'powershell.exe',
+        (
+            'docker run --rm --volumes-from mail2 -v ${pwd}:/unpacker ubuntu' 
+            f'bash -c \"cd /tar_mount && tar xvf /unpacker/{archive_name}.tar --strip 1\"'
+        )
+    ])
+    subprocess.run([
+        'powershell.exe',
+        'docker rm mail2'
     ])
     
  

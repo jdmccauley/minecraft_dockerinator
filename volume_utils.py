@@ -48,7 +48,7 @@ def pick_world(world_names: list) -> int:
     selection = int(selection) - 1
     return selection
 
-def make_volume(world_dirs: list, picked_world: int) -> None:
+def make_volume(world_dirs: list, picked_world: int, volume_name: str) -> None:
     picked_path = world_dirs[picked_world]
     # Make temporary directory with world information
     tmpdir = os.path.join(os.getcwd(), 'data')
@@ -57,11 +57,6 @@ def make_volume(world_dirs: list, picked_world: int) -> None:
         shutil.copyfile('server.properties', 'data/server.properties')
     except:
         print("'data' is already a directory. Please remove to have this script function.")
-    try:
-        volume_name = input("Enter a name for your world volume: ")
-    except:
-        print("Naming the volume 'dockerized_world' by default.")
-        volume_name = 'dockerized_world'
     volumes = subprocess.check_output([
         'powershell.exe',
         'docker volume ls'],
@@ -94,7 +89,7 @@ def make_volume(world_dirs: list, picked_world: int) -> None:
     # Add volumes to volume
     subprocess.run([
         'powershell.exe',
-        'docker create -it -v dockerized_world:/data --name file_shipper ubuntu',
+        f'docker create -it -v {volume_name}:/data --name file_shipper ubuntu',
     ])
     subprocess.run([
         'powershell.exe',
@@ -112,6 +107,4 @@ def make_volume(world_dirs: list, picked_world: int) -> None:
         shutil.rmtree(tmpdir)
     except:
         print("Something went wrong when trying to delete 'data' directory.")
-    return volume_name
-
 
