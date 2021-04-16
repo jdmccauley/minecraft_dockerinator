@@ -12,6 +12,8 @@
      \__,_|\___/ \___|_|\_\___|_|  |_|_| |_|\__,_|\__\___/|_|
 
     
+[![Generic badge](https://img.shields.io/badge/tests-4%20passed%202%20failed-red)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/coverage-61%25-yellowgreen)](https://shields.io/)
 # Quickstart
 
 ```
