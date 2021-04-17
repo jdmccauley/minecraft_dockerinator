@@ -2,7 +2,16 @@
 # to a remote server.
 
 # Custom Libraries
-import cloud_utils
+from utils import cloud_utils
 
-# Main
-cloud_utils.unpack()
+
+def main() -> None:
+    """
+    This runs the cloud_utils unpack function, which extracts a docker volume
+    from a tarball.
+    """
+    cloud_utils.unpack()
+
+
+if __name__ == "__main__":
+    main()

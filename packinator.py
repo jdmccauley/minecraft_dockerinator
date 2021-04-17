@@ -2,7 +2,15 @@
 # to a remote server.
 
 # Custom Libraries
-import cloud_utils
+from utils import cloud_utils
 
-# Main
-cloud_utils.pack_volume()
+def main() -> None:
+    """
+    This runs the cloud_utils pack_volume function, which tarballs a docker
+    volume. This allows for shipping of the docker volume in archive form.
+    """
+    cloud_utils.pack_volume()
+
+
+if __name__ == "__main__":
+    main()

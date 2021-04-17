@@ -1,0 +1,12 @@
+# Git Ignore
+
+# Pycache and related files.
+__pycache__/
+.pytest_cache
+
+# Testing files.
+coverage.json
+.coverage
+
+# Dev files.
+TODO.txt
