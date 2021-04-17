@@ -7,7 +7,13 @@ import subprocess
 # Custom Libaries
 from utils import volume_utils
 
-def main():
+def main() -> None:
+    """
+    Runs the cloud utils pack_volume function, which lists the worlds on the
+    host machine, has the user input a world selection, and then makes a
+    docker volume containing the selected world. Alongside the world, the
+    volume is made with server configurations.
+    """
     world_dirs = volume_utils.get_world_dirs()
     world_names = volume_utils.get_world_names(world_dirs = world_dirs)
 

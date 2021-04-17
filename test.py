@@ -4,7 +4,7 @@
 import subprocess
 import os
 
-def main():
+def main() -> None:
     """
     Runs pytest through coverage, and outputs the test results alongside test
     coverage. The output is saved to coverage.json for linter support.

@@ -5,7 +5,11 @@
 from utils import cloud_utils
 
 
-def main():
+def main() -> None:
+    """
+    This runs the cloud_utils unpack function, which extracts a docker volume
+    from a tarball.
+    """
     cloud_utils.unpack()
 
 
