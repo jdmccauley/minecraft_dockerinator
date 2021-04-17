@@ -79,7 +79,7 @@ def test_make_volume() -> None:
             ).replace("\n", "\t"
             ).split("\t"
     )
-    volume_name = 'test_world'
+    volume_name = 'pytest_test_world'
     assert volume_name not in volumes, \
         "Volume name already exists."
     volume_utils.make_volume(
@@ -103,4 +103,9 @@ def test_make_volume() -> None:
         "Volume not created."
     assert 'data' not in os.listdir(), \
         "'data' directory not deleted."
+    # Remove test volume.
+    subprocess.run([
+        POWERSHELL,
+        f'docker volume rm {volume_name}'
+    ])
 

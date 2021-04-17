@@ -3,6 +3,7 @@
 
 # Native Libraries
 import subprocess
+import os
 
 # Define Constants
 POWERSHELL = 'powershell.exe'
@@ -23,11 +24,13 @@ def pack_volume(volume_name: str, archive_name: str) -> None:
     """
     subprocess.run([
         POWERSHELL,
-        f'docker create -v {volume_name}:/world_volume --name mailman ubuntu /bin/bash'
+        f'docker create -v {volume_name}:/world_volume --name mailman ' +
+            'ubuntu /bin/bash'
     ])
     subprocess.run([
         POWERSHELL,
-        f'docker run --rm --volumes-from mailman -v ${pwd}:/tar_dir ubuntu tar cvf tar_dir/{archive_name}.tar /world_volume'
+        'docker run --rm --volumes-from mailman -v ${pwd}:/tar_dir ubuntu ' +
+            f'tar cvf tar_dir/{archive_name}.tar /world_volume'
     ])
     subprocess.run([
         POWERSHELL,
@@ -51,13 +54,15 @@ def unpack_volume(volume_name: str, archive_name: str) -> None:
     """
     subprocess.run([
         POWERSHELL,
-        f'docker create -v {volume_name}:/tar_mount --name mail2 ubuntu /bin/bash'
+        f'docker create -v {volume_name}:/tar_mount --name mail2 ' +
+            'ubuntu /bin/bash'
     ])
     subprocess.run([
         POWERSHELL,
         (
             'docker run --rm --volumes-from mail2 -v ${pwd}:/unpacker ubuntu' 
-            f'bash -c \"cd /tar_mount && tar xvf /unpacker/{archive_name}.tar --strip 1\"'
+            'bash -c \"cd /tar_mount && tar xvf ' +
+                f'/unpacker/{archive_name}.tar --strip 1\"'
         )
     ])
     subprocess.run([

@@ -20,8 +20,9 @@ def test_pack():
     created, the deletes the volume.
     """
     volume_name = 'pytest_test_volume'
-    packed_volume = 'pytest_test_world.tar'
-    assert packed_volume not in os.listdir(), \
+    packed_volume = 'pytest_test_world'
+    volume_archive = 'pytest_test_world.tar'
+    assert volume_archive not in os.listdir(), \
         "'pytest_test_world.tar' already in directory."
     volume_utils.make_volume(
         volume_utils.get_world_dirs(),
@@ -36,7 +37,7 @@ def test_pack():
         volume_name = volume_name,
         archive_name = packed_volume
     )
-    assert packed_volume in os.listdir(), \
+    assert volume_archive in os.listdir(), \
         "'pytest_test_world.tar' not created in directory."
     # Right now doesn't actually delete.
     subprocess.run([
@@ -80,4 +81,4 @@ def test_unpack():
         POWERSHELL,
         f'docker volume rm {volume_name}'
     ])
-
+    os.remove(packed_volume)
