@@ -17,12 +17,13 @@
 # Quickstart
 
 ```
-python3 voluminator.py
+python3 make_volume.py
+python3 serve_volume.py
 ```
 
 # Purpose
 
-The purpose of this repo is to automate the migration of an existing world in Minecraft Bedrock Edition to a Docker volume. This way, the volume can be mounted on a container that serves [Minecraft Bedrock Edition.](https://hub.docker.com/r/itzg/minecraft-bedrock-server)
+The purpose of this repo is to automate the migration of an existing world in Minecraft Bedrock Edition to a Docker volume. This way, the volume can be mounted to a container that serves [Minecraft Bedrock Edition.](https://hub.docker.com/r/itzg/minecraft-bedrock-server)
 
 This python script finds your Minecraft worlds on your PC, lets you pick which one to convert to a volume, and copies it to a Docker volume. This can then be run with the server container to host your Minecraft world.
 
@@ -51,7 +52,23 @@ C:\Users\username\AppData\Local\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\Lo
 # Steps:
 
 1. Clone this repo.
-2. Run the python script from the repo with `python3 voluminator.py`.
-    * The Bedrock server is started automatically.
-3. Open Minecraft, go to 'Play -> Friends -> LAN Games -> Dedicated Server'
-4. Play Minecraft with your friends (or alone, that's fun too)!
+2. Turn your world into a docker volume by running `python3 make_volume.py`
+3. Serve your world from the volume with `python3 serve_volume.py`.
+4. Open Minecraft, go to 'Play -> Friends -> LAN Games -> Dedicated Server'
+5. Play Minecraft with your friends (or alone, that's fun too)!
+
+# Testing:
+
+Run tests and get test coverage by running `python3 test.py`.
+
+Note that this depends on `pytest` and `coverage`, so install those with `pip3 install pytest coverage` before testing.
+
+# Advanced Use:
+
+This repository can also be used to pack docker volumes into archives and send them to servers. To do so:
+1. Make a volume with `python3 make_volume.py`.
+2. Archive the volume with `python3 pack_volume.py`.
+3. Send the volume to your server.
+4. Unpack the volume on your server with `python3 unpack_volume.py`.
+    * Note that this is currently only supported for Windows servers at this time since the script uses powershell.
+5. Serve your world from the volume with `python3 serve_volume.py`.
