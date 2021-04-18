@@ -33,7 +33,7 @@ def test_pack():
         ),
         volume_name = volume_name
     )
-    cloud_utils.pack_volume(
+    volume_utils.pack_volume(
         volume_name = volume_name,
         archive_name = packed_volume
     )
@@ -63,7 +63,7 @@ def test_unpack():
     )
     assert volume_name not in volumes, \
         "'pytest_restored_volume' already in volume list."
-    cloud_utils.unpack_volume(
+    volume_utils.unpack_volume(
         volume_name = volume_name,
         archive_name = packed_volume
     )

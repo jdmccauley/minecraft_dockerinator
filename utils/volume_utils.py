@@ -7,12 +7,14 @@ import shutil
 import subprocess
 import io
 import getpass
+import glob
 
 # Global variables
 utf8 = 'utf-8'
 
 # Define constants
 POWERSHELL = 'powershell.exe'
+EXCEPTION = "Selecting option 1 by default."
 
 # Functions
 def get_world_dirs() -> list:
@@ -78,7 +80,7 @@ def pick_world(world_names: list) -> int:
     try:
         selection = input("Enter which Minecraft world you want to serve: ")
     except Exception:
-        print("Selecting option 1 by default.")
+        print(EXCEPTION)
         selection = 1
     selection = int(selection) - 1
     return selection
@@ -160,3 +162,191 @@ def make_volume(world_dirs: list, picked_world: int, volume_name: str) -> None:
     except Exception:
         print("Something went wrong when trying to delete 'data' directory.")
 
+def get_volumes() -> list:
+    """
+    Makes a list of docker volumes and returns it.
+
+    Args:
+        None.
+    
+    Returns:
+        volumes: List of unique docker volumes.
+    """
+    volumes = subprocess.check_output([
+        POWERSHELL,
+        'docker volume ls'],
+        text = True
+            ).replace(" ", "\t"
+            ).replace("\n", "\t"
+            ).split("\t"
+    )
+    name_index = volumes.index("NAME")
+    volumes = volumes[name_index + 1:]
+    # Remove repeated value elements.
+    volumes = list(set(volumes))
+    # Remove empty  elements.
+    volumes.remove("")
+    return volumes
+
+def pick_volume(volumes: list) -> int:
+    """
+    Prompts the user to pick an enumeration of a docker volume within the given
+    list of volume names.
+
+    Args:
+       volumes: List of docker volumes.
+
+    Returns:
+        selection: Int representing user's selected volume.
+    
+    Raises:
+        Exception: If user does not input a selection value.
+    """
+    for i in range(len(volumes)):
+        print(f'{i + 1}: {volumes[i]}')
+    try:
+        selection = input("Enter which volume you want to use: ")
+    except Exception:
+        print(EXCEPTION)
+        selection = 1
+    selection = int(selection) - 1
+    return selection
+
+def get_archives() -> list:
+    """
+    Makes a list of tarballs and returns it.
+
+    Args:
+        None.
+    
+    Returns:
+        archive_list: List of tarballs in the current directory.
+    """
+    archives_list = glob.glob("*.tar")
+    return archives_list
+
+def pick_archive(archives: list) -> int:
+    """
+    Prompts the user to pick an enumeration of a tarball within a list of
+    given tarballs.
+
+    Args:
+       archives: List of tarballs.
+
+    Returns:
+        selection: Int representing user's selected tarball.
+    
+    Raises:
+        Exception: If user does not input a selection value.
+    """
+    for i in range(len(archives)):
+        print(f'{i + 1}: {archives[i]}')
+    try:
+        selection = input("Enter which archive you want to use: ")
+    except Exception:
+        print(EXCEPTION)
+        selection = 1
+    selection = int(selection) - 1
+    return selection
+
+
+def input_archive_name() -> str:
+    """
+    Gets input from the user regarding a name for an archive.
+
+    Args:
+        None.
+    
+    Returns:
+        archive_name: Name for the archive.
+    
+    Raises:
+        Exception: If user does not input a name for the archive.
+    """
+    try:
+        archive_name = input("Enter a name for your volume archive: ")
+    except Exception:
+        print("Using archive name 'archived_world' by default.")
+        archive_name = "archived_world"
+    return archive_name
+
+def input_volume_name() -> str:
+    """
+    Gets input from the user regarding a name for a docker volume.
+
+    Args:
+        None.
+    
+    Returns:
+        volume_name: Name for the docker volume.
+    
+    Raises:
+        Exception: If user does not input a name for the docker volume.
+    """
+    try:
+        volume_name = input("Enter a name for your volume to make: ")
+    except Exception:
+        print("Using volume name 'extracted_archive' by deault.")
+        volume_name = "extracted_volume"
+    return volume_name
+
+def pack_volume(volume_name: str, archive_name: str) -> None:
+    """
+    This takes a docker volume name and name for a tarball, and then tarballs
+    the docker volume into a tarball named after the given name. The process
+    is achieved by using an intermediate docker container named 'mailman'.
+
+    Args:
+        volume_name: Name of volume to tarball.
+        archive_name: Name of tarball to be named 'archive_name.tar'.
+    
+    Returns:
+        None.
+    """
+    subprocess.run([
+        POWERSHELL,
+        f'docker create -v {volume_name}:/world_volume --name mailman ' +
+            'ubuntu /bin/bash'
+    ])
+    subprocess.run([
+        POWERSHELL,
+        'docker run --rm --volumes-from mailman -v ${pwd}:/tar_dir ubuntu ' +
+            f'tar cvf tar_dir/{archive_name}.tar /world_volume'
+    ])
+    subprocess.run([
+        POWERSHELL,
+        'docker rm mailman'
+    ])
+
+
+def unpack_volume(volume_name: str, archive_name: str) -> None:
+    """
+    This takes a docker volume name and a name of a tarball, and extracts the
+    tarball into a docker container named after the given docker volume name.
+    This process is achieved by using an intermediate docker container named
+    'mail2'.
+
+    Args:
+        volume_name: Name of volume to make.
+        archive_name: Name of tarball to extract, without the '.tar' extension.
+    
+    Returns:
+        None.
+    """
+    subprocess.run([
+        POWERSHELL,
+        f'docker create -v {volume_name}:/tar_mount --name mail2 ' +
+            'ubuntu /bin/bash'
+    ])
+    subprocess.run([
+        POWERSHELL,
+        (
+            'docker run --rm --volumes-from mail2 -v ${pwd}:/unpacker ubuntu ' 
+            'bash -c \"cd /tar_mount && tar xvf ' +
+                f'/unpacker/{archive_name}.tar --strip 1\"'
+        )
+    ])
+    subprocess.run([
+        POWERSHELL,
+        'docker rm mail2'
+    ])
