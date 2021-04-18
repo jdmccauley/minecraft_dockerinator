@@ -72,3 +72,10 @@ This repository can also be used to pack docker volumes into archives and send t
 4. Unpack the volume on your server with `python3 unpack_volume.py`.
     * Note that this is currently only supported for Windows servers at this time since the script uses powershell.
 5. Serve your world from the volume with `python3 serve_volume.py`.
+
+# Side Notes:
+
+Windows Python versions can be confusing. If `python3` is installed from the 'Microsoft Store', all pip installs might need to be done with:
+```
+python3 -m pip install <package_name>
+```
