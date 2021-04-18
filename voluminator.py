@@ -22,18 +22,11 @@ def main() -> None:
 
     try:
         volume_name = input("Enter a name for your world volume: ")
-    except:
+    except Exception:
         print("Naming the volume 'dockerized_world' by default.")
         volume_name = 'dockerized_world'
 
     volume_utils.make_volume(world_dirs = world_dirs, picked_world = world, volume_name = volume_name)
-
-    # Start server with volume
-
-    subprocess.run([
-        'powershell.exe',
-        'docker run -it -d -e EULA=TRUE -p 19132:19132/udp -v dockerized_world:/data --name dockerized_minecraft itzg/minecraft-bedrock-server'
-    ])
 
 
 if __name__ == "__main__":
