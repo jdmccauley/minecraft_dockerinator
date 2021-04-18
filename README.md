@@ -13,7 +13,7 @@
 
     
 [![Generic badge](https://img.shields.io/badge/tests-passing-brightgreen)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/coverage-62%25-yellowgreen)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/coverage-67%25-yellowgreen)](https://shields.io/)
 # Quickstart
 
 ```
